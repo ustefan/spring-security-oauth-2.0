@@ -12,6 +12,6 @@ public class ResourceController {
   @ResponseBody
   public String getResource() {
 
-    return "resource";
+    return "{data: resource}";
   }
 }
