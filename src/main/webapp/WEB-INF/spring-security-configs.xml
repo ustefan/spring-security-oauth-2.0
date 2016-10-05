@@ -63,7 +63,7 @@
                  entry-point-ref="oauthAuthenticationEntryPoint">
 
     <security:anonymous enabled="false"/>
-    <security:intercept-url pattern="/rest-data/**" access="IS_AUTHENTICATED_FULLY"/>
+    <security:intercept-url pattern="/rest-data/**"/>
     <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
   </security:http>
 
