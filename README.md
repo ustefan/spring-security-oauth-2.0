@@ -1,3 +1,3 @@
-# spring-security-oauth-2.0
+# Spring Security OAuth 2.0
 
 Simple demo of the Spring Security OAuth 2.0 using authorization code grant type.
