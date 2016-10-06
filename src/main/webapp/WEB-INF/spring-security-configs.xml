@@ -24,11 +24,6 @@
                   redirect-uri="http://localhost:8080/"/>
   </oauth:client-details-service>
 
-  <bean id="tokenService" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
-    <property name="tokenStore" ref="tokenStore"/>
-  </bean>
-  <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore"/>
-
   <security:http pattern="/oauth/token*"
                  use-expressions="true"
                  create-session="stateless"
@@ -39,6 +34,15 @@
     <security:intercept-url pattern="/oauth/token*" access="hasRole('ROLE_CLIENT')"/>
     <security:csrf disabled="true"/>
   </security:http>
+
+  <security:authentication-manager id="clientAuthenticationManager">
+    <security:authentication-provider user-service-ref="clientDetailsUserService"/>
+  </security:authentication-manager>
+
+  <bean id="clientDetailsUserService"
+        class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
+    <constructor-arg ref="clientDetails"/>
+  </bean>
 
   <bean id="clientAuthenticationEntryPoint"
         class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
@@ -67,14 +71,10 @@
   </bean>
 
   <!-- Common -->
-  <security:authentication-manager id="clientAuthenticationManager">
-    <security:authentication-provider user-service-ref="clientDetailsUserService"/>
-  </security:authentication-manager>
-
-  <bean id="clientDetailsUserService"
-        class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
-    <constructor-arg ref="clientDetails"/>
+  <bean id="tokenService" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+    <property name="tokenStore" ref="tokenStore"/>
   </bean>
+  <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore"/>
 
   <security:http pattern="/**" use-expressions="true">
     <security:intercept-url pattern="/login*" access="permitAll()"/>
