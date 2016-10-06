@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class ResourceController {
 
-  @RequestMapping(value = "/rest-data/resource", method = RequestMethod.GET)
+  @RequestMapping(value = "/rest/resource", method = RequestMethod.GET)
   @ResponseBody
   public String getResource() {
 

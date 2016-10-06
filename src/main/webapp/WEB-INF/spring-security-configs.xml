@@ -18,7 +18,7 @@
     <oauth:client client-id="restapp"
                   secret="secret"
                   scope="read"
-                  resource-ids="rest-data"
+                  resource-ids="rest"
                   authorized-grant-types="authorization_code"
                   authorities="ROLE_CLIENT"
                   redirect-uri="http://localhost:8080/"/>
@@ -30,45 +30,41 @@
   <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore"/>
 
   <security:http pattern="/oauth/token*"
+                 use-expressions="true"
                  create-session="stateless"
-                 authentication-manager-ref="clientAuthenticationManager"
-                 use-expressions="true">
+                 authentication-manager-ref="clientAuthenticationManager">
 
     <security:http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
     <security:anonymous enabled="false"/>
     <security:intercept-url pattern="/oauth/token*" access="hasRole('ROLE_CLIENT')"/>
-    <security:custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER"/>
     <security:csrf disabled="true"/>
   </security:http>
 
   <bean id="clientAuthenticationEntryPoint"
         class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
-    <property name="realmName" value="rest-data/client"/>
+    <property name="realmName" value="rest/client"/>
     <property name="typeName" value="Basic"/>
-  </bean>
-
-  <bean id="clientCredentialsTokenEndpointFilter"
-        class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
-    <property name="authenticationManager" ref="clientAuthenticationManager"/>
   </bean>
 
   <!-- Resource server -->
   <oauth:resource-server id="resourceServerFilter"
-                         resource-id="rest-data"
+                         resource-id="rest"
                          token-services-ref="tokenService"/>
 
-  <security:http pattern="/rest-data/**"
-                 create-session="stateless"
+  <security:http pattern="/rest/**"
                  use-expressions="true"
+                 create-session="stateless"
                  entry-point-ref="oauthAuthenticationEntryPoint">
 
     <security:anonymous enabled="false"/>
-    <security:intercept-url pattern="/rest-data/**"/>
+    <security:intercept-url pattern="/rest/**"/>
     <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
   </security:http>
 
   <bean id="oauthAuthenticationEntryPoint"
-        class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint"/>
+        class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+    <property name="realmName" value="rest"/>
+  </bean>
 
   <!-- Common -->
   <security:authentication-manager id="clientAuthenticationManager">
@@ -80,7 +76,7 @@
     <constructor-arg ref="clientDetails"/>
   </bean>
 
-  <security:http pattern="/**" auto-config="true" use-expressions="true">
+  <security:http pattern="/**" use-expressions="true">
     <security:intercept-url pattern="/login*" access="permitAll()"/>
     <security:intercept-url pattern="/**" access="isAuthenticated()"/>
     <security:form-login/>
